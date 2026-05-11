@@ -1,4 +1,4 @@
-name: Android Cloud Build (Capacitor Fixed)
+name: Android Cloud Build (Stable Capacitor)
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
     - name: Build web app
       run: npm run build
 
-    - name: Setup Java 17
+    - name: Setup Java (Android 17)
       uses: actions/setup-java@v4
       with:
         distribution: temurin
@@ -32,19 +32,19 @@ jobs:
     - name: Install Capacitor CLI
       run: npm install -g @capacitor/cli
 
-    - name: Sync Capacitor
+    - name: Sync Capacitor Android
       run: npx cap sync android
 
-    - name: Fix Gradle permissions
+    - name: Make Gradle executable
       run: chmod +x android/gradlew
 
-    - name: Build APK
+    - name: Build Debug APK
       run: |
         cd android
-        ./gradlew assembleDebug --no-daemon
+        ./gradlew assembleDebug --stacktrace --no-daemon
 
-    - name: Upload APK
+    - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
-        name: app-debug
+        name: notifyapp-debug-apk
         path: android/app/build/outputs/apk/debug/app-debug.apk
