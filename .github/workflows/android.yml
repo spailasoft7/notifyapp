@@ -8,14 +8,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Setup Node.js
+    - name: Setup Node.js (latest LTS)
       uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 22
 
     - name: Install dependencies
       run: npm install
@@ -32,19 +35,19 @@ jobs:
     - name: Install Capacitor CLI
       run: npm install -g @capacitor/cli
 
-    - name: Sync Capacitor (Android)
+    - name: Sync Capacitor Android
       run: npx cap sync android
 
-    - name: Make Gradle executable
+    - name: Ensure Gradle permissions
       run: chmod +x android/gradlew
 
     - name: Build APK (Debug)
       run: |
         cd android
-        ./gradlew clean assembleDebug --no-daemon --stacktrace
+        ./gradlew clean assembleDebug --no-daemon
 
-    - name: Upload APK artifact
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: capacitor-app-debug-apk
+        name: capacitor-apk
         path: android/app/build/outputs/apk/debug/app-debug.apk
