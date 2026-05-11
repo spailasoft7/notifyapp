@@ -8,25 +8,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Setup Node.js (latest LTS)
+    - name: Setup Node.js (LTS safe)
       uses: actions/setup-node@v4
       with:
         node-version: 22
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci || npm install
 
     - name: Build web app
       run: npm run build
 
-    - name: Setup Java 17
+    - name: Setup Java 17 (Android stable)
       uses: actions/setup-java@v4
       with:
         distribution: temurin
@@ -38,13 +35,13 @@ jobs:
     - name: Sync Capacitor Android
       run: npx cap sync android
 
-    - name: Ensure Gradle permissions
+    - name: Fix Gradle permissions
       run: chmod +x android/gradlew
 
     - name: Build APK (Debug)
       run: |
         cd android
-        ./gradlew clean assembleDebug --no-daemon
+        ./gradlew assembleDebug --no-daemon --stacktrace
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
