@@ -8,22 +8,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Setup Node.js (LTS safe)
+    - name: Setup Node (modern stable)
       uses: actions/setup-node@v4
       with:
         node-version: 22
 
-    - name: Install dependencies
-      run: npm ci || npm install
+    - name: Clean install dependencies
+      run: npm install
 
     - name: Build web app
       run: npm run build
 
-    - name: Setup Java 17 (Android stable)
+    - name: Setup Java 17 (Android safe)
       uses: actions/setup-java@v4
       with:
         distribution: temurin
@@ -38,10 +41,10 @@ jobs:
     - name: Fix Gradle permissions
       run: chmod +x android/gradlew
 
-    - name: Build APK (Debug)
+    - name: Build APK
       run: |
         cd android
-        ./gradlew assembleDebug --no-daemon --stacktrace
+        ./gradlew clean assembleDebug --no-daemon --stacktrace
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
