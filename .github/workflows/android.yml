@@ -1,4 +1,4 @@
-name: Stable Android Build (Capacitor)
+name: Stable Capacitor Android Build
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repo
       uses: actions/checkout@v4
 
     - name: Setup Node.js
@@ -18,7 +18,7 @@ jobs:
         node-version: 20
 
     - name: Install dependencies
-      run: npm ci || npm install
+      run: npm install
 
     - name: Build web app
       run: npm run build
@@ -32,10 +32,10 @@ jobs:
     - name: Install Capacitor CLI
       run: npm install -g @capacitor/cli
 
-    - name: Sync Capacitor Android
+    - name: Sync Capacitor (Android)
       run: npx cap sync android
 
-    - name: Ensure Gradle wrapper is executable
+    - name: Make Gradle executable
       run: chmod +x android/gradlew
 
     - name: Build APK (Debug)
@@ -43,8 +43,8 @@ jobs:
         cd android
         ./gradlew clean assembleDebug --no-daemon --stacktrace
 
-    - name: Upload APK
+    - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
-        name: app-debug-apk
+        name: capacitor-app-debug-apk
         path: android/app/build/outputs/apk/debug/app-debug.apk
